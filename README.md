@@ -1,2 +1,2 @@
 # chess-theme-classifier
-Learn how to build a MLP Network :D
+Learning how to build a MLP Network :D
