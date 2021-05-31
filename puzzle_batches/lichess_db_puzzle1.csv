@@ -1,3 +1,4 @@
+PuzzleId,FEN,Moves,Rating,RatingDeviation,Popularity,NbPlays,Themes,GameUrl
 4BCto,r2q3k/ppp3pB/3p3p/8/3b4/2N1BP1b/PnQ2P2/R3R1K1 w - - 0 20,e3h6 g7h6 c2g6 d8h4 e1e8 a8e8 g6e8 h8h7 e8e4 h4e4,2519,94,85,192,crushing hangingPiece middlegame veryLong,https://lichess.org/MTzevtAt#39
 4BCyd,8/p2n2pk/3p1p1p/4pP1B/2PpP3/P2P1QRP/1rq3PK/8 b - - 4 32,c2d2 f3g4 d2g5 g4d1,2634,102,85,110,advantage defensiveMove endgame short,https://lichess.org/hX7lFSUt/black#64
 4BD2K,rrR3k1/p4ppp/4p3/8/3P4/4P3/qPR2PPP/2Q3K1 b - - 6 24,b8c8 c2c8 a8c8 c1c8,674,100,71,53,backRankMate endgame mate mateIn2 short,https://lichess.org/gzxALr5j/black#48
