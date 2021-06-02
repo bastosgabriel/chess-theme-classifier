@@ -1,0 +1,8 @@
+{
+    "used_themes" : [
+        "advancedPawn", "advantage", "bishopEndgame", "capturingDefender", "crushing", "equality", "kingsideAttack", "defensiveMove", "endgame",
+        "exposedKing", "fork", "hangingPiece", "interference", "knightEndgame", "middlegame", "opening", "pawnEndgame", "pin", "promotion", "queenEndgame",
+        "queenRookEndgame", "queensideAttack", "rookEndgame", "skewer", "trappedPiece", "underPromotion", "xRayAttack", "zugzwang"
+    ]
+}
+
