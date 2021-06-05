@@ -10,29 +10,34 @@ USED_THEMES = {
 }
 
 def main():
-    df = pd.read_csv('puzzle_batches/small_batch.csv')
-    df = df[['FEN','Moves','Themes']].dropna()
-    df['valid_themes'] = ""
+    df = pd.read_csv()
 
-    for row in df.itertuples():
-        start = time.time()
-        board = chess.Board(row.FEN)
+    for df in pd.read_csv('puzzle_batches/small_batch.csv', chunksize=2000):
 
-        df, board = execute_board_move(row, df, board)
-        df = create_valid_themes_column(row, df)
-        df = create_board_positions_with_piece_vectors(df)
-        df = encode_fen(row, df, board)
 
-        end = time.time()
-        print(end - start)
+        df = df[['FEN','Moves','Themes']].dropna()
+        df['valid_themes'] = ""
 
-    themes_dummies = df.valid_themes.str.get_dummies(' ').add_prefix('theme_')
-    df = pd.concat([df, themes_dummies], axis=1)
+        for row in df.itertuples():
+            start = time.time()
+            board = chess.Board(row.FEN)
 
-    df.drop(['Moves'], inplace=True, axis=1)
-    df.drop(['Themes', 'valid_themes'], inplace=True, axis=1)
-    df.drop(['FEN'], inplace=True, axis=1)
-    df.to_csv('cleaned_puzzle_batches/cleaned_batch.csv')
+            df, board = execute_board_move(row, df, board)
+            df = create_valid_themes_column(row, df)
+            df = create_board_positions_with_piece_vectors(df)
+            df = encode_fen(row, df, board)
+
+            end = time.time()
+            duration = end - start
+            print("row time: %.4fs" % duration)
+
+        themes_dummies = df.valid_themes.str.get_dummies(' ').add_prefix('theme_')
+        df = pd.concat([df, themes_dummies], axis=1)
+
+        df.drop(['Moves'], inplace=True, axis=1)
+        df.drop(['Themes', 'valid_themes'], inplace=True, axis=1)
+        df.drop(['FEN'], inplace=True, axis=1)
+        df.to_csv('cleaned_puzzle_batches/cleaned_batch.csv') # chunksize = 2000
 
 
 def execute_board_move(row, df, board):
