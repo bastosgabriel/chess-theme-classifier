@@ -10,48 +10,38 @@ USED_THEMES = {
 }
 
 def main():
-    df = pd.read_csv()
+    #for n in range(1, 5):
+    print(f"Reading 'puzzle_batches/validation_batch.csv'...")
+    print()
 
-    for df in pd.read_csv('puzzle_batches/small_batch.csv', chunksize=2000):
+    df = pd.read_csv(f'puzzle_batches/validation_batch.csv')
+    df = df[['FEN','Moves','Themes']].dropna()
+    df['valid_themes'] = ""
 
+    df = create_board_positions_with_piece_vectors(df)
+    for row in df.itertuples():
+        start = time.time()
 
-        df = df[['FEN','Moves','Themes']].dropna()
-        df['valid_themes'] = ""
+        df = create_valid_themes_column(row, df)
+        df = encode_fen(row, df)
 
-        for row in df.itertuples():
-            start = time.time()
-            board = chess.Board(row.FEN)
+        end = time.time()
+        duration = end - start
+        print("row time: %.4fs" % duration)
 
-            df, board = execute_board_move(row, df, board)
-            df = create_valid_themes_column(row, df)
-            df = create_board_positions_with_piece_vectors(df)
-            df = encode_fen(row, df, board)
+    themes_dummies = df.valid_themes.str.get_dummies(' ').add_prefix('theme_')
+    df = pd.concat([df, themes_dummies], axis=1)
 
-            end = time.time()
-            duration = end - start
-            print("row time: %.4fs" % duration)
-
-        themes_dummies = df.valid_themes.str.get_dummies(' ').add_prefix('theme_')
-        df = pd.concat([df, themes_dummies], axis=1)
-
-        df.drop(['Moves'], inplace=True, axis=1)
-        df.drop(['Themes', 'valid_themes'], inplace=True, axis=1)
-        df.drop(['FEN'], inplace=True, axis=1)
-        df.to_csv('cleaned_puzzle_batches/cleaned_batch.csv') # chunksize = 2000
-
-
-def execute_board_move(row, df, board):
-    computer_move = row.Moves.split()[0]
-    board.push_uci(computer_move)
-    df.loc[row.Index].FEN = board.fen() # TODO transformar em at
-
-    return df, board
+    df.drop(['Moves'], inplace=True, axis=1)
+    df.drop(['Themes', 'valid_themes'], inplace=True, axis=1)
+    df.drop(['FEN'], inplace=True, axis=1)
+    df.to_csv(f'cleaned_puzzle_batches/cleaned_validation_batch.csv')
 
 
 def create_valid_themes_column(row, df):
     row_themes = set(row.Themes.split())
     valid_themes = row_themes.intersection(USED_THEMES)
-    df.loc[row.Index].valid_themes = " ".join(valid_themes) # TODO transformar em .at
+    df.at[row.Index, 'valid_themes'] = " ".join(valid_themes)
 
     return df
 
@@ -69,9 +59,12 @@ def create_board_positions_with_piece_vectors(df):
     return df
 
 
-def encode_fen(row, df, board):
+def encode_fen(row, df):
+    board = chess.Board(row.FEN)
+    computer_move = row.Moves.split()[0]
+    board.push_uci(computer_move)
+
     df.at[row.Index, "color_to_play"] = int(board.turn) or -1
-    df.at[row.Index, "castling_rights"] = int(board.castling_rights)
 
     # color: false = preto / true = branco
     for pos, piece in board.piece_map().items():
