@@ -1,3 +1,4 @@
+PuzzleId,FEN,Moves,Rating,RatingDeviation,Popularity,NbPlays,Themes,GameUrl
 VvRNE,3r1r2/p4k2/7R/1p3p2/4Nq2/2P2P1Q/PP2K3/8 b - - 0 34,f5e4 h3e6 f7g7 e6g6,1572,75,100,1037,endgame mate mateIn2 short,https://lichess.org/3N7pbuen/black#68
 Zi8RS,r6r/pp1knppp/4p3/3pP3/1B6/1P6/P3QPPP/qN3RK1 b - - 2 14,a1d4 e2b5 e7c6 b5b7,1064,78,100,269,crushing middlegame short,https://lichess.org/bbkr7Weg/black#28
 Zi8ap,2k1r3/1rp3p1/1p6/4Q1p1/8/5P2/PPP5/1K1R3R b - - 0 37,e8e5 h1h8 e5e8 h8e8,1053,80,100,71,endgame mate mateIn2 rookEndgame short,https://lichess.org/AJnri76j/black#74
