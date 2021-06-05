@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# splitcsv.sh <Filename> [chunkSize]
 
 HEADER=$(head -1 $1)
 if [ -n "$2" ]; then
