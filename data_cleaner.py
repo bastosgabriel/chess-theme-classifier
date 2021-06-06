@@ -13,6 +13,7 @@ def main():
     #for n in range(1, 5):
     print(f"Reading 'puzzle_batches/validation_batch.csv'...")
     print()
+    start = time.time()
 
     df = pd.read_csv(f'puzzle_batches/validation_batch.csv')
     df = df[['FEN','Moves','Themes']].dropna()
@@ -20,14 +21,12 @@ def main():
 
     df = create_board_positions_with_piece_vectors(df)
     for row in df.itertuples():
-        start = time.time()
 
         df = create_valid_themes_column(row, df)
         df = encode_fen(row, df)
 
         end = time.time()
         duration = end - start
-        print("row time: %.4fs" % duration)
 
     themes_dummies = df.valid_themes.str.get_dummies(' ').add_prefix('theme_')
     df = pd.concat([df, themes_dummies], axis=1)
@@ -35,8 +34,10 @@ def main():
     df.drop(['Moves'], inplace=True, axis=1)
     df.drop(['Themes', 'valid_themes'], inplace=True, axis=1)
     df.drop(['FEN'], inplace=True, axis=1)
-    df.to_csv(f'cleaned_puzzle_batches/cleaned_validation_batch.csv')
+    df.to_csv(f'cleaned_puzzle_batches/cleaned_validation_batch.csv',
+                index_label="Index")
 
+    print("exec time: %.4fs" % duration)
 
 def create_valid_themes_column(row, df):
     row_themes = set(row.Themes.split())
