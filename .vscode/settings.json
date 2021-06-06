@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "/home/bastosgabriel/miniconda3/envs/chessenv/bin/python"
+    "python.pythonPath": "/home/bastosgabriel/miniconda3/envs/chessenv/bin/python",
+    "jupyter.jupyterServerType": "local"
 }
