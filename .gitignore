@@ -127,3 +127,18 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Puzzle DB
+lichess_db.csv
+cleaned_data/
+
+# VisualStudioCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+
+
+# TODO ignorar vscode

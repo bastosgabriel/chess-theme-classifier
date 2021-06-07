@@ -11,25 +11,21 @@ USED_THEMES = {
 }
 
 def main():
-    print(f"Reading 'puzzle_batches/lichess_db_puzzle.csv'...")
-    print()
+    print(f"Reading 'lichess_db.csv'...")
     start = time.time()
 
-    df = pd.read_csv(f'puzzle_batches/lichess_db_puzzle.csv')
-    print('leu')
+    df = pd.read_csv(f'lichess_db.csv')
 
     df = df[['FEN','Moves','Themes']].dropna()
-    print('oi')
 
+    print(f"Creating output dataframe...")
     out_df = create_out_df(df)
-    print(out_df)
     for row in tqdm(df.itertuples()):
         encode_fen(row, out_df)
         encode_themes(row, out_df)
 
-    out_df.to_csv(f'cleaned_puzzle_batches/cleaned_lichess_db_puzzle.csv',
-                index=False)
-
+    print(f"Saving cleaned data...")
+    out_df.to_csv(f'cleaned_data/cleaned_lichess_db.csv', index=False)
 
     end = time.time()
     duration = end - start
@@ -69,7 +65,6 @@ def encode_fen(row, df):
 
     df.at[row.Index, "color_to_play"] = int(board.turn) or -1
 
-    # color: false = preto / true = branco
     for pos, piece in board.piece_map().items():
         square_name = chess.square_name(pos)
         piece_name = piece.symbol().lower()
