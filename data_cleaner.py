@@ -1,7 +1,8 @@
+import numpy as np
 import pandas as pd
 import time
 import chess
-
+from tqdm import tqdm
 
 USED_THEMES = {
     "advancedPawn", "advantage", "bishopEndgame", "capturingDefender", "crushing", "equality", "kingsideAttack", "defensiveMove", "endgame",
@@ -10,53 +11,51 @@ USED_THEMES = {
 }
 
 def main():
-    #for n in range(1, 5):
-    print(f"Reading 'puzzle_batches/validation_batch.csv'...")
-    print()
+    print(f"Reading 'lichess_db.csv'...")
+    start = time.time()
 
-    df = pd.read_csv(f'puzzle_batches/validation_batch.csv')
+    df = pd.read_csv(f'lichess_db.csv')
+
     df = df[['FEN','Moves','Themes']].dropna()
-    df['valid_themes'] = ""
 
-    df = create_board_positions_with_piece_vectors(df)
-    for row in df.itertuples():
-        start = time.time()
+    print(f"Creating output dataframe...")
+    out_df = create_out_df(df)
+    for row in tqdm(df.itertuples()):
+        encode_fen(row, out_df)
+        encode_themes(row, out_df)
 
-        df = create_valid_themes_column(row, df)
-        df = encode_fen(row, df)
+    print(f"Saving cleaned data...")
+    out_df.to_csv(f'cleaned_data/cleaned_lichess_db.csv', index=False)
 
-        end = time.time()
-        duration = end - start
-        print("row time: %.4fs" % duration)
-
-    themes_dummies = df.valid_themes.str.get_dummies(' ').add_prefix('theme_')
-    df = pd.concat([df, themes_dummies], axis=1)
-
-    df.drop(['Moves'], inplace=True, axis=1)
-    df.drop(['Themes', 'valid_themes'], inplace=True, axis=1)
-    df.drop(['FEN'], inplace=True, axis=1)
-    df.to_csv(f'cleaned_puzzle_batches/cleaned_validation_batch.csv')
+    end = time.time()
+    duration = end - start
+    print("exec time: %.4fs" % duration)
 
 
-def create_valid_themes_column(row, df):
-    row_themes = set(row.Themes.split())
-    valid_themes = row_themes.intersection(USED_THEMES)
-    df.at[row.Index, 'valid_themes'] = " ".join(valid_themes)
-
-    return df
-
-
-def create_board_positions_with_piece_vectors(df):
+def create_out_df(df):
     squares = chess.SQUARE_NAMES
+    columns = []
 
     # pawn, knight, bishop, rook, king
-    # queen will be encoded as bishop + rook
     pieces = ['p', 'n', 'b', 'r', 'k'] 
     for s in squares:
         for p in pieces:
-            df[f"{s}.{p}"] = 0
+            columns.append(f"{s}.{p}")
 
-    return df
+    columns.append('color_to_play')
+    columns += [f"theme_{theme}" for theme in USED_THEMES]
+
+    out_df = pd.DataFrame(0, index=np.arange(len(df)), columns=columns, dtype=np.int8)
+
+    return out_df
+
+
+def encode_themes(row, df):
+    row_themes = set(row.Themes.split())
+    valid_themes = row_themes.intersection(USED_THEMES)
+
+    for t in valid_themes:
+        df.at[row.Index, f"theme_{t}"] = 1
 
 
 def encode_fen(row, df):
@@ -66,7 +65,6 @@ def encode_fen(row, df):
 
     df.at[row.Index, "color_to_play"] = int(board.turn) or -1
 
-    # color: false = preto / true = branco
     for pos, piece in board.piece_map().items():
         square_name = chess.square_name(pos)
         piece_name = piece.symbol().lower()
