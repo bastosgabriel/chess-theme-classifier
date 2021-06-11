@@ -80,3 +80,4 @@ def encode_fen(row, df):
 
 if __name__ == "__main__":
     main()
+z
